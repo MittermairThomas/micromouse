@@ -15,11 +15,7 @@ void initHmc(void) {
     twiStop();
 }
 
-int16_t hmcRead(void) {
-    uint8_t i = 0;
-
-    int16_t hmcData = 0;
-
+void hmcRead(struct HmcData* _pHmc) {
     twiStart();
 
     twiWriteByte(HMC_ADDRESS | MASTER_TX);
@@ -29,15 +25,20 @@ int16_t hmcRead(void) {
 
     twiWriteByte(HMC_ADDRESS | MASTER_RX);
 
-    hmcData = twiReadByteAck() <<8;
-    hmcData |= twiReadByteAck();
+    _pHmc->x = twiReadByteAck() <<8;
+    _pHmc->x |= twiReadByteAck();
 
-    for (i = 0; i <= 3; i++)
-        (void) twiReadByteAck();
+    _pHmc->x += _pHmc->xOffset;
 
-    (void) twiReadByteNack();
+    _pHmc->z = twiReadByteAck() <<8;
+    _pHmc->z |= twiReadByteAck();
+
+    _pHmc->z += _pHmc->zOffset;
+
+    _pHmc->y = twiReadByteAck() <<8;
+    _pHmc->y |= twiReadByteAck();
+
+    _pHmc->y += _pHmc->yOffset;
 
     twiStop();
-
-    return hmcData + hmcOffset;
 }

@@ -9,10 +9,18 @@
 #define HMC_CONFIG_A 0x00
 #define HMC_DATA     0x03
 
-extern int16_t hmcOffset;
+struct HmcData {
+    int16_t x;
+    int16_t y;
+    int16_t z;
+
+    int16_t xOffset;
+    int16_t yOffset;
+    int16_t zOffset;
+};
 
 extern void initHmc(void);
 
-extern int16_t hmcRead(void);
+extern void hmcRead(struct HmcData* _hmc);
 
 #endif
