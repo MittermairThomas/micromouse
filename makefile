@@ -1,36 +1,30 @@
 # -------- Projektparameter --------
-MCU     = atmega328p
-CC      = avr-gcc
 OBJCOPY = avr-objcopy
 
 PORT = /dev/ttyUSB0
 #BAUTRATE = 57600
 BAUTRATE = 115200
 
-CFLAGS  = -mmcu=$(MCU) -Os -std=gnu11 -Wall -Wextra -pedantic
-LDFLAGS = -mmcu=$(MCU)
-
-SRCDIR = src
-BINDIR = bin
-TARGET  = main
-
-SRCS    = $(wildcard $(SRCDIR)/*.c)
-OBJS    = $(SRCS:$(SRCDIR)/%.c=$(BINDIR)/%.o)
+SRCS    = $(wildcard src/*.c)
+OBJS    = $(SRCS:src/%.c=bin/%.o)
 
 # -------- Targets --------
-all: $(BINDIR)/$(TARGET).hex
+all: bin/main.hex
 
-$(BINDIR)/%.o: $(SRCDIR)/%.c | $(BINDIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+bin:
+	mkdir -p bin
 
-$(BINDIR)/$(TARGET).elf: $(OBJS)
-	$(CC) $(LDFLAGS) $^ -o $@
+bin/%.o: src/%.c | bin
+	avr-gcc -mmcu=atmega328p -Os -std=gnu11 -Wall -Wextra -pedantic -c $< -o $@
 
-$(BINDIR)/$(TARGET).hex: $(BINDIR)/$(TARGET).elf
-	$(OBJCOPY) -O ihex -R .eeprom $< $@
+bin/main.elf: $(OBJS)
+	avr-gcc -mmcu=atmega328p -Os -std=gnu11 -Wall -Wextra -pedantic $^ -o $@
+
+bin/main.hex: bin/main.elf
+	avr-objcopy -O ihex -R .eeprom $< $@
 
 clean:
-	rm -f $(BINDIR)/*.o $(BINDIR)/*.elf
+	rm -f bin/*.o bin/*.elf
 
 flash:
-	avrdude -v -patmega328p -carduino -P$(PORT) -b$(BAUTRATE) -Uflash:w:$(BINDIR)/$(TARGET).hex:i
+	avrdude -v -patmega328p -carduino -P$(PORT) -b$(BAUTRATE) -Uflash:w:bin/main.hex:i

@@ -1,6 +1,6 @@
 #include "../config.h"
 
-int16_t hmcOffset = 0; //Gemessener wert
+struct HmcData hmc = {0};
 
 void initHmc(void) {
     twiStart();

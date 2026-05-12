@@ -19,6 +19,8 @@ struct HmcData {
     int16_t zOffset;
 };
 
+extern struct HmcData hmc;
+
 extern void initHmc(void);
 
 extern void hmcRead(struct HmcData* _hmc);

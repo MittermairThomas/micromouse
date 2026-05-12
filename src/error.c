@@ -13,6 +13,6 @@ void clearError(void) {
 void error(uint8_t _error) {
     if (_error > 0x0F)
         return;
-
+    clearError();
     PORTC |= _error;
 }
